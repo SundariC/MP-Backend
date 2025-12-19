@@ -12,17 +12,20 @@ connectDB();
 
 const app = express(); 
 
+app.use(cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"]
+}));
+app.use(express.json());
+
 const server = http.createServer(app);
 
 const io = new Server(server, {
    cors: {
-    origin: "*",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]
    }
 });
-
-app.use(cors());
-app.use(express.json());
 
 app.get("/", (req, res) => {
     res.send("Server is running");
@@ -31,7 +34,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/bookings", bookingRoutes);
 
-io.on("connection", (socked) => {
+io.on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
 
     socket.on("join_chat", (bookingId) => {
@@ -39,19 +42,16 @@ io.on("connection", (socked) => {
         console.log(`User joined room: ${bookingId}`);
     });
     socket.on("send_message", (data) => {
-        io.to(data.bookingId).emit("receive message");
+        io.to(data.bookingId).emit("receive message", data);
     });
-    socket.on("disconnected", () => {
+    socket.on("disconnect", () => {
         console.log("User Disconnected");
     });
 });
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(5000, () => {
-    console.log("Server started");
-});
 
 server.listen(PORT, () => {
-    console.log("Chat Server started");
+    console.log("Server & Chat Server started");
 });
