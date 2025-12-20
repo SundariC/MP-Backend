@@ -1,29 +1,52 @@
 import Booking from "../Models/Booking.js";
 import Razorpay from "razorpay";
 import dotenv from "dotenv";
+
 dotenv.config();
 
-const razorpayInstance = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID, 
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-})
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 //create Bookings
+// export const createBooking = async (req, res) => {
+//     try {
+//         const { counselorId, sessionType, appointmentDate } = req.body;
+//         const clientId = req.user.id;
+
+//         const newBooking = new Booking({
+//             client: clientId,
+//             counselor: counselorId,
+//             sessionType: sessionType.toLowerCase(),
+//             appointmentDate
+//         });
+
+//         await newBooking.save();
+//         res.status(201).json({ message: "Booking Request Sent!", booking: newBooking });  
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// };
 export const createBooking = async (req, res) => {
     try {
-        const { counselorId, sessionType, appointmentDate } = req.body;
+        const { counselorId, appointmentDate, timeSlot, paymentId } = req.body;
         const clientId = req.user.id;
 
         const newBooking = new Booking({
             client: clientId,
             counselor: counselorId,
-            sessionType: sessionType.toLowerCase(),
-            appointmentDate
+            appointmentDate,
+            timeSlot, // Time slot add pannunga
+            paymentId,
+            status: "confirmed", // Payment mudinjadhala direct-ah confirm pannalam
+            sessionType: "video"
         });
 
         await newBooking.save();
-        res.status(201).json({ message: "Booking Request Sent!", booking: newBooking });  
+        res.status(201).json({ message: "Booking Confirmed!", booking: newBooking });  
     } catch (error) {
+        console.log("DB Save Error:", error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -67,19 +90,26 @@ export const updateBookingStatus = async (req, res) => {
     }
 };
 
-//Create Payment Order  
+// Create Payment Order  
 export const createPaymentOrder = async (req, res) => {
-    try {
-        const { amount } = req.body;
-
-        const options = {
-            amount: amount * 100, 
-            currency: "INR",
-            receipt: `receipt_${Date.now()}`,
-        };
-        const order = await razorpayInstance.orders.create(options);
-        res.json(order);
-    } catch (error) {
-        res.status(500).json({ message: error.message })
+  try {
+    const { amount } = req.body; 
+    if (!amount) {
+      return res.status(400).json({ message: "Amount is required" });
     }
+    const options = {
+      amount: Number(amount * 100), 
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+    };
+    console.log("Creating Razorpay Order for:", amount); 
+    const order = await razorpay.orders.create(options);
+    res.status(200).json({
+      key: process.env.RAZORPAY_KEY_ID,
+      order,
+    });
+  } catch (err) {
+    console.log("Razorpay Error Details:", err);
+    res.status(500).json({ message: "Payment order failed", error: err.message });
+  }
 };
