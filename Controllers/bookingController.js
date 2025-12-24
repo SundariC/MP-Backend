@@ -29,27 +29,29 @@ const razorpay = new Razorpay({
 //     }
 // };
 export const createBooking = async (req, res) => {
-    try {
-        const { counselorId, appointmentDate, timeSlot, paymentId } = req.body;
-        const clientId = req.user.id;
+  try {
+    const { counselorId, sessionType, appointmentDate, amount } = req.body;
 
-        const newBooking = new Booking({
-            client: clientId,
-            counselor: counselorId,
-            appointmentDate,
-            timeSlot, // Time slot add pannunga
-            paymentId,
-            status: "confirmed", // Payment mudinjadhala direct-ah confirm pannalam
-            sessionType: "video"
-        });
-
-        await newBooking.save();
-        res.status(201).json({ message: "Booking Confirmed!", booking: newBooking });  
-    } catch (error) {
-        console.log("DB Save Error:", error);
-        res.status(500).json({ message: error.message });
+    if (!amount || isNaN(amount)) {
+      return res.status(400).json({ message: "Invalid amount" });
     }
+
+    const booking = await Booking.create({
+      client: req.user.id,
+      counselor: counselorId,
+      sessionType,
+      appointmentDate,
+      amount,
+      status: "pending",
+      isPaid: false
+    });
+
+    res.status(201).json(booking);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
+
 
 //Get Bookings for logged-in User
 export const getMyBookings = async (req, res) => {
@@ -73,16 +75,33 @@ export const getMyBookings = async (req, res) => {
 };
 
 //Update bookings from counselor
+// export const updateBookingStatus = async (req, res) => {
+//     try {
+//         const { bookingId, status } = req.body;
+//         const meetingLink = `https://meet.jit.si/counseling-${bookingId}`;
+
+//         const booking = await Booking.findByIdAndUpdate(
+//             bookingId,
+//             { status, videoLink: meetingLink },
+//             { new: true }
+//         );
+//         if (!booking) return res.status(404).json({ message: "Booking not found" });
+//         res.json({ message: `Booking status updated to ${status}`, booking });
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// };
 export const updateBookingStatus = async (req, res) => {
     try {
-        const { bookingId, status } = req.body;
-        const meetingLink = `https://meet.jit.si/counseling-${bookingId}`;
+        const { id } = req.params; // ✅ URL params-la irundhu ID edunga
+        const { status } = req.body; 
 
         const booking = await Booking.findByIdAndUpdate(
-            bookingId,
-            { status, videoLink: meetingLink },
+            id,
+            { status },
             { new: true }
         );
+        
         if (!booking) return res.status(404).json({ message: "Booking not found" });
         res.json({ message: `Booking status updated to ${status}`, booking });
     } catch (error) {
