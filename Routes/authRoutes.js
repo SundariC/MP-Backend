@@ -1,13 +1,19 @@
 import express from "express";
-import { register, login, updateProfile, getAllCounselors } from "../Controllers/authController.js";
-import protect from "../Middleware/authMiddleware.js";
+import {
+  register,
+  login,
+  updateProfile,
+  getAllCounselors,
+  getMyProfile
+} from "../Controllers/authController.js";
+import { isCounselor, protect } from "../Middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-
-router.put("/update", protect, updateProfile);
-router.get("/counselors", getAllCounselors)
+router.get("/me", protect, getMyProfile);      // ✅ Added
+router.put("/update", protect, isCounselor, updateProfile);
+router.get("/counselors", getAllCounselors);
 
 export default router;

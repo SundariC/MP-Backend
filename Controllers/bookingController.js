@@ -9,126 +9,107 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-//create Bookings
-// export const createBooking = async (req, res) => {
-//     try {
-//         const { counselorId, sessionType, appointmentDate } = req.body;
-//         const clientId = req.user.id;
-
-//         const newBooking = new Booking({
-//             client: clientId,
-//             counselor: counselorId,
-//             sessionType: sessionType.toLowerCase(),
-//             appointmentDate
-//         });
-
-//         await newBooking.save();
-//         res.status(201).json({ message: "Booking Request Sent!", booking: newBooking });  
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// };
+// CREATE BOOKING (AFTER PAYMENT)
 export const createBooking = async (req, res) => {
   try {
-    const { counselorId, sessionType, appointmentDate, amount } = req.body;
+    const {
+      counselor,          // ✅ frontend match
+      appointmentDate,
+      timeSlot,
+      amount,
+      sessionType
+    } = req.body;
 
-    if (!amount || isNaN(amount)) {
-      return res.status(400).json({ message: "Invalid amount" });
+    if (!counselor || !appointmentDate || !timeSlot || !amount) {
+      return res.status(400).json({ message: "Missing booking details" });
     }
 
     const booking = await Booking.create({
       client: req.user.id,
-      counselor: counselorId,
-      sessionType,
+      counselor,
       appointmentDate,
+      timeSlot,
       amount,
-      status: "pending",
-      isPaid: false
+      sessionType, 
+      paymentStatus: "PAID",
+      sessionStatus: "UPCOMING"
     });
 
-    res.status(201).json(booking);
+    res.status(201).json({ message: "Booking confirmed", booking });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-
-//Get Bookings for logged-in User
+// GET BOOKINGS (CLIENT / COUNSELOR)
 export const getMyBookings = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const userRole = req.user.role;
+  try {
+    const userId = req.user.id;
+    const role = req.user.role;
 
-        let query;
-        if (userRole === "counselor" ) {
-            query = { counselor: userId };
-        } else {
-            query = { client: userId }
-        }
-        const bookings = await Booking.find(query)
-        .populate("client", "name email")
-        .populate("counselor", "name specialization");
-        res.json(bookings);
-    } catch (error) {
-        res.status(500).json({ message: error.message })
-    }
+    const query =
+      role === "counselor"
+        ? { counselor: userId }
+        : { client: userId };
+
+    const bookings = await Booking.find(query)
+      .populate("client", "fullName email")
+      .populate("counselor", "fullName specialization");
+
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-//Update bookings from counselor
-// export const updateBookingStatus = async (req, res) => {
-//     try {
-//         const { bookingId, status } = req.body;
-//         const meetingLink = `https://meet.jit.si/counseling-${bookingId}`;
-
-//         const booking = await Booking.findByIdAndUpdate(
-//             bookingId,
-//             { status, videoLink: meetingLink },
-//             { new: true }
-//         );
-//         if (!booking) return res.status(404).json({ message: "Booking not found" });
-//         res.json({ message: `Booking status updated to ${status}`, booking });
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// };
+// COUNSELOR UPDATE SESSION STATUS
 export const updateBookingStatus = async (req, res) => {
-    try {
-        const { id } = req.params; // ✅ URL params-la irundhu ID edunga
-        const { status } = req.body; 
+  try {
+    const { bookingId, sessionStatus } = req.body;
 
-        const booking = await Booking.findByIdAndUpdate(
-            id,
-            { status },
-            { new: true }
-        );
-        
-        if (!booking) return res.status(404).json({ message: "Booking not found" });
-        res.json({ message: `Booking status updated to ${status}`, booking });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+    const booking = await Booking.findByIdAndUpdate(
+      bookingId,
+      {
+        sessionStatus,
+        videoLink:
+          sessionStatus === "UPCOMING"
+            ? `https://meet.jit.si/session-${bookingId}`
+            : ""
+      },
+      { new: true }
+    );
+
+    if (!booking)
+      return res.status(404).json({ message: "Booking not found" });
+
+    res.json({ message: "Session updated", booking });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-// Create Payment Order  
+// CREATE RAZORPAY ORDER
 export const createPaymentOrder = async (req, res) => {
   try {
-    const { amount } = req.body; 
-    if (!amount) {
-      return res.status(400).json({ message: "Amount is required" });
-    }
-    const options = {
-      amount: Number(amount * 100), 
+    const { amount } = req.body;
+
+    if (!amount)
+      return res.status(400).json({ message: "Amount required" });
+
+    const order = await razorpay.orders.create({
+      amount: amount * 100,
       currency: "INR",
-      receipt: `receipt_${Date.now()}`,
-    };
-    console.log("Creating Razorpay Order for:", amount); 
-    const order = await razorpay.orders.create(options);
-    res.status(200).json({
+      receipt: `receipt_${Date.now()}`
+    });
+
+    res.json({
       key: process.env.RAZORPAY_KEY_ID,
-      order,
+      order
     });
   } catch (err) {
-    console.log("Razorpay Error Details:", err);
-    res.status(500).json({ message: "Payment order failed", error: err.message });
+    res.status(500).json({
+      message: "Payment order failed",
+      error: err.message
+    });
   }
 };
