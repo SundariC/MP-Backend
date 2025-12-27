@@ -21,6 +21,13 @@ const bookingSchema = new mongoose.Schema({
     required: true
   },
 
+  // ✅ ADDED
+  sessionType: {
+    type: String,
+    enum: ["mental", "career", "relationship"],
+    required: true
+  },
+
   amount: {
     type: Number,
     required: true
@@ -39,6 +46,12 @@ const bookingSchema = new mongoose.Schema({
   },
 
   videoLink: {
+    type: String,
+    default: ""
+  },
+
+  // ✅ ADDED
+  sessionNotes: {
     type: String,
     default: ""
   }
