@@ -1,13 +1,14 @@
 import express from "express";
-import { sendMessage, getMessages } from "../Controllers/messageController.js";
-import { protect } from "../Middleware/authMiddleware.js";
+import { sendMessage, getMessagesByBooking } from "../Controllers/messageController.js";
+// Inga unga auth middleware-ah import pannikonga (optional but safe)
+// import { protect } from "../Middleware/authMiddleware.js"; 
 
 const router = express.Router();
 
-// Send message
-router.post("/", protect, sendMessage);
+// Route: POST /api/messages/send
+router.post("/send", sendMessage);
 
-// Get chat messages by bookingId
-router.get("/:bookingId", protect, getMessages);
+// Route: GET /api/messages/:bookingId
+router.get("/:bookingId", getMessagesByBooking);
 
 export default router;

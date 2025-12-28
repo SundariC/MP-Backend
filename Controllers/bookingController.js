@@ -62,27 +62,22 @@ export const getMyBookings = async (req, res) => {
   }
 };
 
-// COUNSELOR UPDATE SESSION STATUS
+// updateBookingStatus-la rejectionReason sethukonga
 export const updateBookingStatus = async (req, res) => {
   try {
-    const { bookingId, sessionStatus } = req.body;
+    const { bookingId, sessionStatus, rejectionReason } = req.body;
 
     const booking = await Booking.findByIdAndUpdate(
       bookingId,
-      {
-        sessionStatus,
-        videoLink:
-          sessionStatus === "UPCOMING"
-            ? `https://meet.jit.si/session-${bookingId}`
-            : ""
+      { 
+        sessionStatus, 
+        rejectionReason: sessionStatus === 'CANCELLED' ? rejectionReason : "",
+        videoLink: sessionStatus === 'UPCOMING' ? `https://meet.jit.si/session-${bookingId}` : ""
       },
       { new: true }
     );
 
-    if (!booking)
-      return res.status(404).json({ message: "Booking not found" });
-
-    res.json({ message: "Session updated", booking });
+    res.json({ message: "Status updated", booking });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -1,10 +1,10 @@
 import express from "express";
-import { getSessionNotes, addSessionNote } from "../Controllers/sessionController.js";
-import { protect, isCounselor } from "../Middleware/authMiddleware.js"; // Corrected Import
+import { createSessionNote } from "../Controllers/sessionController.js";
+import { protect } from "../middleware/authMiddleware.js"; // Inga unga auth middleware path check pannunga
 
 const router = express.Router();
 
-router.post("/add-note", protect, isCounselor, addSessionNote); 
-router.get("/:bookingId", protect, getSessionNotes);
+// Middleware 'protect' add panna thaan req.user kedaikum
+router.post("/create", protect, createSessionNote); 
 
 export default router;

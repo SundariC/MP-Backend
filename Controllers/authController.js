@@ -78,18 +78,26 @@ export const login = async (req, res) => {
 // Update Profile (Counselor)
 export const updateProfile = async (req, res) => {
   try {
-    const { specialization, bio, price, image, services, availability } = req.body;
-    const userId = req.user.id;
+    // req.user.id eppo kidaikum-na neenga "Protect" middleware use pannum pothu
+    const userId = req.user.id; 
+    const { specialization, bio, price, experience, location } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { specialization, bio, price, image, services, availability },
-      { new: true }
-    );
+      { specialization, bio, price, experience, location },
+      { new: true } // Updated data-ah return panna
+    ).select("-password");
 
-    res.json({ message: "Profile updated!", updatedUser });
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ 
+      message: "Profile updated successfully", 
+      user: updatedUser 
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 

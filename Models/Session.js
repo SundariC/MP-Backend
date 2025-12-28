@@ -1,21 +1,25 @@
 import mongoose from "mongoose";
 
-const sessionNoteSchema = new mongoose.Schema({
-  bookingId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Booking",
-    required: true,
+const sessionSchema = new mongoose.Schema({
+  bookingId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Booking', 
+    required: true 
   },
-  counselor: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+  counselorId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User' 
   },
-  note: {
-    type: String,
-    required: true,
+  sessionNotes: { 
+    type: String, 
+    default: "" 
   },
-  attachments: [{ type: String }],
-}, { timestamps: true });
+  completedAt: { 
+    type: Date, 
+    default: Date.now 
+  }
+});
 
-export default mongoose.model("Session", sessionNoteSchema);
+// ✅ INTHA RENDU LINE-AH CORRECT-AH PAARUNGA
+const Session = mongoose.model("Session", sessionSchema);
+export default Session;

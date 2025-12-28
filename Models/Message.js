@@ -1,21 +1,28 @@
 import mongoose from "mongoose";
 
 const messageSchema = new mongoose.Schema({
-  bookingId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Booking",
-  },
-  sender: { type: mongoose.Schema.Types.ObjectId,
-    ref: "User", 
-    required: true },
-  text: {
-    type: String,
+  // Booking ID reference-ah save aaganum
+  bookingId: { 
+    type: String, // String-ah vachikitta dynamic-ah irukum, or use mongoose.Schema.Types.ObjectId
     required: true,
+    index: true 
   },
-  timestamp: {
-    type: Date,
-    default: Date.now,
+  sender: { 
+    type: String, 
+    required: true 
   },
+  text: { 
+    type: String, 
+    required: true 
+  },
+  role: { 
+    type: String 
+  },
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  }
 });
 
-export default mongoose.model("Message", messageSchema);
+const Message = mongoose.model("Message", messageSchema);
+export default Message;

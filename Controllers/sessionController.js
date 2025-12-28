@@ -1,39 +1,27 @@
 import Session from "../Models/Session.js";
+import Booking from "../Models/Booking.js";
 
-// Add session note (Counselor only)
-export const addSessionNote = async (req, res) => {
+export const createSessionNote = async (req, res) => {
   try {
-    const { bookingId, note } = req.body; 
+    const { bookingId, sessionNotes } = req.body;
 
-    if (!bookingId || !note) {
-      return res.status(400).json({ message: "Booking ID and note are required" });
-    }
+    // Counselor ID edukurom (Fallback mechanism)
+    const counselorId = req.user ? req.user.id : req.body.counselorId;
 
-    const newNote = await Session.create({
-      bookingId, 
-      note,
-      // ✅ FIX: 'counselorId' ku bathula 'counselor' nu mathirukom
-      // Model-la entha name iruko athe thaan ingaiyum irukanum
-      counselor: req.user.id, 
+    const newSession = new Session({
+      bookingId,
+      counselorId,
+      sessionNotes
     });
 
-    res.status(201).json(newNote);
+    await newSession.save();
+
+    // Booking status update
+    await Booking.findByIdAndUpdate(bookingId, { status: 'COMPLETED' });
+
+    res.status(201).json({ message: "Success!" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Get notes for a booking
-export const getSessionNotes = async (req, res) => {
-  try {
-    const { bookingId } = req.params;
-
-    // ✅ populate("counselor") nu mathunga (Model-la irukira field name)
-    const notes = await Session.find({ bookingId })
-      .populate("counselor", "fullName");
-
-    res.json(notes);
-  } catch (error) {
+    console.error("Backend Error:", error);
     res.status(500).json({ message: error.message });
   }
 };
