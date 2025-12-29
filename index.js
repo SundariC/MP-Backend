@@ -1,8 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { createServer } from "http"; // ADDED
-import { Server } from "socket.io"; // ADDED
+import { createServer } from "http"; 
+import { Server } from "socket.io"; 
 import authRoutes from "./Routes/authRoutes.js";
 import connectDB from "./Database/dbConfig.js";
 import messageRoutes from "./Routes/messageRoutes.js";
@@ -16,7 +16,7 @@ const app = express();
 
 // 1. Setup CORS
 app.use(cors({
-  origin: "http://localhost:5173", // Frontend URL
+  origin: "https://mp1frontend.netlify.app/", // Frontend URL
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -27,7 +27,7 @@ app.use(express.json());
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://mp1frontend.netlify.app/",
     methods: ["GET", "POST"]
   }
 });
@@ -42,9 +42,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send_message", (data) => {
-    // 📢 ITHU THAAN MUKKIYAM: room-la irukura ellarukum anupum (sender-ah thavira)
-    // 'socket.to' use pannuna sender-ku message thirumba varathu, 
-    // so namma frontend-laye local state update panrom.
     socket.to(data.bookingId).emit("receive_message", data);
   });
 });
@@ -59,8 +56,8 @@ app.get("/", (req, res) => {
   res.send("Server is running with Socket.io");
 });
 
-// 5. Start Server (Note: httpServer use pannanum, app illa)
-const PORT = process.env.PORT || 3000; // Dashboard-padi 3000 vachikalam
+
+const PORT = process.env.PORT || 3000; 
 httpServer.listen(PORT, () => {
   console.log(`🚀 Server started on port ${PORT}`);
 });

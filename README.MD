@@ -20,16 +20,15 @@ npm start
 ```
 
 ## API Documentation
-- **Postman Collection**: [View on Postman](https://www.postman.com/)
+- **Postman Collection**: [View on Postman](https://documenter.getpostman.com/view/50347548/2sBXVbGtCH)
 - **API Endpoints**: Available in `./docs/endpoints.md`
 
 ## Deployment
-- **Deploy with Railway**: [Railway.app](https://railway.app/)
-- **Deploy with Vercel**: [Vercel.com](https://vercel.com/)
-- **Deploy with Heroku**: [Heroku.com](https://heroku.com/)
+- **Deploy with Render**: [Railway.app](https://mp-backend-1-82km.onrender.com/)
+- **Deploy with Netlify**: [Vercel.com](https://mp1frontend.netlify.app/)
 
 ## Repository
-- **GitHub**: [View Repository](https://github.com/)
+- **GitHub**: [View Repository](https://github.com/SundariC/MP-Backend)
 
 ## Technologies Used
 - Node.js / Express
