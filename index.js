@@ -16,9 +16,8 @@ const app = express();
 
 // 1. Setup CORS
 app.use(cors({
-  origin: "https://mp1frontend.netlify.app/", // Frontend URL
+  origin: ["https://mp1frontend.netlify.app", "http://localhost:5173"], 
   methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
 }));
 
 app.use(express.json());
@@ -27,7 +26,7 @@ app.use(express.json());
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "https://mp1frontend.netlify.app/",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"]
   }
 });
