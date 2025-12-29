@@ -1,6 +1,6 @@
 import express from "express";
 import { createSessionNote } from "../Controllers/sessionController.js";
-import { protect } from "../middleware/authMiddleware.js"; // Inga unga auth middleware path check pannunga
+import { protect } from "../Middleware/authMiddleware.js"; // Inga unga auth middleware path check pannunga
 
 const router = express.Router();
 
