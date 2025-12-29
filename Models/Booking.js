@@ -41,7 +41,7 @@ const bookingSchema = new mongoose.Schema({
 
   sessionStatus: {
     type: String,
-    enum: ["UPCOMING", "COMPLETED", "CANCELLED"],
+    enum: ["UPCOMING", "ACTIVE", "COMPLETED", "CANCELLED"],
     default: "UPCOMING"
   },
 

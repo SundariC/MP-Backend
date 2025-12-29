@@ -4,7 +4,9 @@ import {
   login,
   updateProfile,
   getAllCounselors,
-  getMyProfile
+  getMyProfile,
+  // resetPassword,
+  // forgotPassword
 } from "../Controllers/authController.js";
 import { isCounselor, protect } from "../Middleware/authMiddleware.js";
 
@@ -15,5 +17,7 @@ router.post("/login", login);
 router.get("/me", protect, getMyProfile);      // ✅ Added
 router.put("/update-profile", protect, isCounselor, updateProfile);
 router.get("/counselors", getAllCounselors);
+// router.post("/reset-password", resetPassword);
+// router.post("/forgot-password", forgotPassword);
 
 export default router;

@@ -108,3 +108,24 @@ export const createPaymentOrder = async (req, res) => {
     });
   }
 };
+
+export const endSession = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    booking.sessionStatus = "COMPLETED";
+    booking.videoLink = null; // optional
+    booking.endedAt = new Date();
+
+    await booking.save();
+
+    res.json({ message: "Session ended", booking });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
