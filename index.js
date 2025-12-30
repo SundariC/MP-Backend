@@ -16,7 +16,7 @@ const app = express();
 
 // 1. Setup CORS
 app.use(cors({
-  origin: ["https://mp1frontend.netlify.app", "http://localhost:5173", "http://localhost:3000"],
+  origin: ["https://mp-frontend-lemon.vercel.app", "http://localhost:5173", "http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -27,7 +27,7 @@ app.use(express.json());
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ["https://mp1frontend.netlify.app", "http://localhost:5173", "http://localhost:3000"],
+    origin: "https://mp-frontend-lemon.vercel.app",
     methods: ["GET", "POST"],
     credentials: true
   },
