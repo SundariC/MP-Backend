@@ -37,34 +37,34 @@ export const register = async (req, res) => {
 };
 
 // 2. Login User
-// export const login = async (req, res) => {
-//   try {
-//     const { email, password } = req.body;
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-//     const user = await User.findOne({ email });
-//     if (!user) {
-//       return res.status(401).json({ message: "Invalid credentials" });
-//     }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
-//     const isPasswordValid = await bcrypt.compare(password, user.password);
-//     if (!isPasswordValid) {
-//       return res.status(401).json({ message: "Invalid credentials" });
-//     }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
-//     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-//       expiresIn: "1h",
-//     });
-//     user.token = token;
-//     await user.save();
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    user.token = token;
+    await user.save();
 
-//     res
-//       .status(200)
-//       .json({ message: "Login successful", token: token, role: user.role });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Server error Error in login" });
-//   }
-// };
+    res
+      .status(200)
+      .json({ message: "Login successful", token: token, role: user.role });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error Error in login" });
+  }
+};
 // export const login = async (req, res) => {
 //   try {
 //     const { email, password } = req.body;
@@ -102,34 +102,32 @@ export const register = async (req, res) => {
 //     res.status(500).json({ message: error.message });
 //   }
 // };
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+// export const login = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     const user = await User.findOne({ email });
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+//     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-    user.token = token;
-    await user.save();
+//     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
-    res
-      .status(200)
-      .json({ message: "Login successful", token: token, role: user.role });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error Error in login" });
-  }
-};
+//     res.status(200).json({
+//       message: "Login successful",
+//       token,
+//       user: {
+//         id: user._id,
+//         fullName: user.fullName,
+//         role: user.role,
+//         email: user.email
+//       }
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
 
 // 3. Update Profile
