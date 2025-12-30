@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-router.get("/me", protect, getMyProfile);      // ✅ Added
+router.get("/me", protect, getMyProfile);     
 router.put("/update-profile", protect, isCounselor, updateProfile);
 router.get("/counselors", getAllCounselors);
 // router.post("/reset-password", resetPassword);
