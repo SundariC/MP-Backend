@@ -14,50 +14,50 @@ connectDB();
 
 const app = express();
 
-// // 1. Setup CORS
-// app.use(cors({
-//   origin: ["https://mp-frontend-lemon.vercel.app", "http://localhost:5173", "http://localhost:3000"],
-//   methods: ["GET", "POST", "PUT", "DELETE"],
-// }));
-
-// app.use(express.json());
-
-// // 2. Create HTTP Server for Socket.io
-// const httpServer = createServer(app);
-// const io = new Server(httpServer, {
-//   cors: {
-//     origin: "https://mp-frontend-lemon.vercel.app",
-//     methods: ["GET", "POST"],
-//   },
-//   transports: ['websocket', 'polling']
-// });
-
-// 1. Array-la unga pudhu Vercel URL-ah add pannunga
-const allowedOrigins = [
-  "https://mp-frontend-lemon.vercel.app", // Exact link from your error
-  "http://localhost:5173",
-  "http://localhost:3000"
-];
-
+// 1. Setup CORS
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"]
+  origin: ["https://mp-frontend-lemon.vercel.app", "http://localhost:5173", "http://localhost:3000"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
-// 2. Pre-flight OPTIONS request-ah handle panna ithu kandippa venum
-app.options("*", cors()); 
-
 app.use(express.json());
+
+
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "https://mp-frontend-lemon.vercel.app",
+    methods: ["GET", "POST"],
+  },
+  transports: ['websocket', 'polling']
+});
+
+
+// const allowedOrigins = [
+//   "https://mp-frontend-lemon.vercel.app", // Exact link from your error
+//   "http://localhost:5173",
+//   "http://localhost:3000"
+// ];
+
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     // Allow requests with no origin (like mobile apps)
+//     if (!origin) return callback(null, true);
+//     if (allowedOrigins.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   credentials: true,
+//   allowedHeaders: ["Content-Type", "Authorization"]
+// }));
+
+
+// app.options("*", cors()); 
+
+// app.use(express.json());
 
 // 3. Socket Logic
 io.on("connection", (socket) => {
