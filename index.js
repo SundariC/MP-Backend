@@ -83,7 +83,7 @@ app.get("/", (req, res) => {
   res.send("Server is running with Socket.io");
 });
 
-
+// 5. Start Server
 const PORT = process.env.PORT || 3000; 
 httpServer.listen(PORT, () => {
   console.log(`🚀 Server started on port ${PORT}`);
