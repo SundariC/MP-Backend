@@ -1,6 +1,5 @@
 import express from "express";
 import { sendMessage, getMessagesByBooking } from "../Controllers/messageController.js";
-// Inga unga auth middleware-ah import pannikonga (optional but safe)
 // import { protect } from "../Middleware/authMiddleware.js"; 
 
 const router = express.Router();

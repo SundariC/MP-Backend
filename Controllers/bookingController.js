@@ -13,7 +13,7 @@ const razorpay = new Razorpay({
 export const createBooking = async (req, res) => {
   try {
     const {
-      counselor,          // ✅ frontend match
+      counselor,          
       appointmentDate,
       timeSlot,
       amount,
@@ -64,7 +64,7 @@ export const getMyBookings = async (req, res) => {
   }
 };
 
-// updateBookingStatus-la rejectionReason sethukonga
+// updateBookingStatus - UPDATE BOOKING STATUS
 export const updateBookingStatus = async (req, res) => {
   try {
     const { bookingId, sessionStatus, rejectionReason } = req.body;
@@ -111,6 +111,7 @@ export const createPaymentOrder = async (req, res) => {
   }
 };
 
+// END SESSION
 export const endSession = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);

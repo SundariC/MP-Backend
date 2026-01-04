@@ -4,8 +4,6 @@ import Booking from "../Models/Booking.js";
 export const createSessionNote = async (req, res) => {
   try {
     const { bookingId, sessionNotes } = req.body;
-
-    // Counselor ID edukurom (Fallback mechanism)
     const counselorId = req.user ? req.user.id : req.body.counselorId;
 
     const newSession = new Session({

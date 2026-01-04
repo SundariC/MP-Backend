@@ -1,13 +1,12 @@
 import Message from "../Models/Message.js";
 
-// 1. Message-ah Save panna
+//1. Message save 
 export const sendMessage = async (req, res) => {
   try {
-    console.log("Data received in backend:", req.body); // Backend terminal-la log aagum
+    console.log("Data received in backend:", req.body); 
 
     const { bookingId, sender, text, role } = req.body;
 
-    // Strict validation-ah relax panni test pannuvom
     if (!text) {
       return res.status(400).json({ message: "Text is empty" });
     }
@@ -27,14 +26,14 @@ export const sendMessage = async (req, res) => {
   }
 };
 
-// 2. Chat History-ah Fetch panna
+// 2. Chat History
 export const getMessagesByBooking = async (req, res) => {
   try {
     const { bookingId } = req.params;
     
-    // Booking ID vachi ellaa messages-aiyum sorted-ah edukrom
+    
     const messages = await Message.find({ bookingId })
-      .sort({ createdAt: 1 }); // Oldest to Newest
+      .sort({ createdAt: 1 }); 
 
     res.status(200).json(messages);
   } catch (error) {

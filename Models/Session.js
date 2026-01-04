@@ -20,6 +20,5 @@ const sessionSchema = new mongoose.Schema({
   }
 });
 
-// ✅ INTHA RENDU LINE-AH CORRECT-AH PAARUNGA
 const Session = mongoose.model("Session", sessionSchema);
 export default Session;

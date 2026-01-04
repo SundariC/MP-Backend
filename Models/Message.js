@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 
 const messageSchema = new mongoose.Schema({
-  // Booking ID reference-ah save aaganum
   bookingId: { 
-    type: String, // String-ah vachikitta dynamic-ah irukum, or use mongoose.Schema.Types.ObjectId
+    type: String, 
     required: true,
     index: true 
   },

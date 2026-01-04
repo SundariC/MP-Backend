@@ -27,7 +27,6 @@ const userSchema = new mongoose.Schema({
   rating: { type: Number, default: 0 },
   image: { type: String },
 
-  // ✅ ADDED (TASK REQUIREMENT)
   availability: [
     {
       day: { type: String },
