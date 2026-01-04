@@ -44,8 +44,9 @@ export const createBooking = async (req, res) => {
 // GET BOOKINGS (CLIENT / COUNSELOR)
 export const getMyBookings = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
     const role = req.user.role;
+    console.log("Requesting user ID and role:", req.user);
 
     const query =
       role === "counselor"
@@ -58,6 +59,7 @@ export const getMyBookings = async (req, res) => {
 
     res.json(bookings);
   } catch (error) {
+    console.error("Error fetching bookings:", error);
     res.status(500).json({ message: error.message });
   }
 };

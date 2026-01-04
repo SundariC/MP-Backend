@@ -1,26 +1,29 @@
 import jwt from "jsonwebtoken";
+import User from "../Models/User.js";
+
 
 // 1. General Protect: Logged in-ah nu check panna
-export const protect = (req, res, next) => {
+export const protect = async (req, res, next) => {
   let token;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer ")
-  ) {
+  // if (
+  //   req.headers.authorization &&
+  //   req.headers.authorization.startsWith("Bearer ")
+  // ) {
     try {
       token = req.headers.authorization.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
+      const user = await User.findById(decoded._id);
+      console.log("user found in protect middleware:", decoded);
       // req.user-la { id, role } store aagum
-      req.user = decoded; 
+      req.user = user; 
       next();
     } catch (error) {
       return res.status(401).json({ message: "Not authorized, token failed" });
     }
-  } else {
-    return res.status(401).json({ message: "No token, authorization denied" });
-  }
+  // } else {
+  //   return res.status(401).json({ message: "No token, authorization denied" });
+  // }
 };
 
 // 2. Counselor Only: Counselor-ku mattum uriya features-ku
