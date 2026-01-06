@@ -16,7 +16,7 @@ const app = express();
 
 // 1. Setup CORS
 app.use(cors({
-  origin: [ "https://mp-frontend-lemon.vercel.app", "http://localhost:5173", "http://localhost:3000" ],
+  origin:  "https://mp-frontend-lemon.vercel.app" ,
   methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
