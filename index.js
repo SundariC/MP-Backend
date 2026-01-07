@@ -10,19 +10,28 @@ import bookingRoutes from "./Routes/bookingRoutes.js";
 import sessionRoutes from "./Routes/sessionRoutes.js";
 
 dotenv.config();
-connectDB();
 
 const app = express();
 
-// 1. Setup CORS
+// Middleware
 app.use(cors({
-  origin:  "https://mp-frontend-lemon.vercel.app" ,
+  origin: "https://mp-frontend-lemon.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 }));
-
 app.use(express.json());
 
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/bookings", bookingRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/session", sessionRoutes);
 
+app.get("/", (req, res) => {
+  res.send("Server is running perfectly!");
+});
+
+// Socket setup
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -32,59 +41,29 @@ const io = new Server(httpServer, {
   transports: ['websocket', 'polling']
 });
 
-
-// const allowedOrigins = [
-//   "https://mp-frontend-lemon.vercel.app", // Exact link from your error
-//   "http://localhost:5173",
-//   "http://localhost:3000"
-// ];
-
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     // Allow requests with no origin (like mobile apps)
-//     if (!origin) return callback(null, true);
-//     if (allowedOrigins.indexOf(origin) !== -1) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//   credentials: true,
-//   allowedHeaders: ["Content-Type", "Authorization"]
-// }));
-
-
-// app.options("*", cors()); 
-
-// app.use(express.json());
-
-// 3. Socket Logic
 io.on("connection", (socket) => {
-  console.log("User Connected:", socket.id);
-
-  socket.on("join_room", (bookingId) => {
-    socket.join(bookingId);
-    console.log(`User joined room: ${bookingId}`);
-  });
-
-  socket.on("send_message", (data) => {
-    socket.to(data.bookingId).emit("receive_message", data);
+  console.log("New User Connected:", socket.id);
+  socket.on("join_room", (id) => {
+    socket.join(id);
+    console.log(`Joined room: ${id}`);
   });
 });
 
-// 4. Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/bookings", bookingRoutes);
-app.use("/api/messages", messageRoutes);
-app.use("/api/session", sessionRoutes);
+// Database Connection & Server Start
+const PORT = process.env.PORT || 3000;
 
-app.get("/", (req, res) => {
-  res.send("Server is running with Socket.io");
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    console.log("✅ Database Connected");
+    
+    httpServer.listen(PORT, () => {
+      console.log(`🚀 Server is LIVE on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Database connection failed:", error);
+    process.exit(1);
+  }
+};
 
-// 5. Start Server
-const PORT = process.env.PORT || 3000; 
-httpServer.listen(PORT, () => {
-  console.log(`🚀 Server started on port ${PORT}`);
-});
+startServer();
