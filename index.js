@@ -15,11 +15,12 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "https://mp-frontend-lemon.vercel.app",
+  origin: process.env.NODE_ENV === "development" ? "*" : "https://mp-frontend-lemon.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 app.use(express.json());
+
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -35,7 +36,7 @@ app.get("/", (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "https://mp-frontend-lemon.vercel.app",
+    origin: process.env.NODE_ENV === "development" ? "*" : "https://mp-frontend-lemon.vercel.app",
     methods: ["GET", "POST"],
   },
   transports: ['websocket', 'polling']

@@ -11,7 +11,6 @@ const bookingSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
-
   appointmentDate: {
     type: Date,
     required: true
@@ -57,5 +56,6 @@ const bookingSchema = new mongoose.Schema({
   }
 
 }, { timestamps: true });
+
 
 export default mongoose.model("Booking", bookingSchema);
