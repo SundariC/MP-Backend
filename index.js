@@ -1,8 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { createServer } from "http";
-import { Server } from "socket.io";
+import { createServer } from "http"; 
+import { Server } from "socket.io"; 
 import authRoutes from "./Routes/authRoutes.js";
 import connectDB from "./Database/dbConfig.js";
 import messageRoutes from "./Routes/messageRoutes.js";
@@ -14,17 +14,13 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(
-  cors({
-    origin:
-      process.env.NODE_ENV === "development"
-        ? "*"
-        : "https://mp-frontend-lemon.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: process.env.NODE_ENV === "development" ? "*" : "https://mp-frontend-lemon.vercel.app",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 app.use(express.json());
+
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -40,13 +36,10 @@ app.get("/", (req, res) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin:
-      process.env.NODE_ENV === "development"
-        ? "*"
-        : "https://mp-frontend-lemon.vercel.app",
+    origin: process.env.NODE_ENV === "development" ? "*" : "https://mp-frontend-lemon.vercel.app",
     methods: ["GET", "POST"],
   },
-  transports: ["websocket", "polling"],
+  transports: ['websocket', 'polling']
 });
 
 io.on("connection", (socket) => {
@@ -54,13 +47,6 @@ io.on("connection", (socket) => {
   socket.on("join_room", (id) => {
     socket.join(id);
     console.log(`Joined room: ${id}`);
-  });
-  socket.on("send_call_notification", (data) => {
-    io.to(data.receiverId).emit("receive_call_notification", {
-      sessionId: data.sessionId,
-      senderName: data.senderName,
-    });
-    console.log(`Call notification sent to: ${data.receiverId}`);
   });
 });
 
@@ -71,7 +57,7 @@ const startServer = async () => {
   try {
     await connectDB();
     console.log("✅ Database Connected");
-
+    
     httpServer.listen(PORT, () => {
       console.log(` Server is LIVE on port ${PORT}`);
     });
