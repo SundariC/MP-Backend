@@ -59,7 +59,7 @@ const startServer = async () => {
     console.log("✅ Database Connected");
     
     httpServer.listen(PORT, () => {
-      console.log(`an Server is LIVE on port ${PORT}`);
+      console.log(` Server is LIVE on port ${PORT}`);
     });
   } catch (error) {
     console.error(" Database connection failed:", error);
