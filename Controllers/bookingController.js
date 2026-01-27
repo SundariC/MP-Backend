@@ -31,11 +31,11 @@ export const createBooking = async (req, res) => {
       timeSlot,
       amount,
       sessionType, 
-      paymentStatus: "PAID",
-      sessionStatus: "UPCOMING"
+      paymentStatus: "PENDING",
+      sessionStatus: "AWAITING_APPROVAL"
     });
 
-    res.status(201).json({ message: "Booking confirmed", booking });
+    res.status(201).json({ message: "Request sent to counselor", booking });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -45,21 +45,33 @@ export const createBooking = async (req, res) => {
 export const getMyBookings = async (req, res) => {
   try {
     const userId = req.user._id;
-    const role = req.user.role;
-    console.log("Requesting user ID and role:", req.user);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    // const role = req.user.role;
+    // console.log("Requesting user ID and role:", req.user);
+    let bookings = await Booking.find({
+      $or: [{ client: userId }, { counselor: userId }]
+    }).populate("counselor client");
 
-    const query =
-      role === "counselor"
-        ? { counselor: userId }
-        : { client: userId };
+    bookings = bookings.mao(b => {
+      const bDate = new Date(b.appointmentDate);
+      if (bDate < today && b.sessionStatus === "AWAITING_APPROVAL") {
+        b.sessionStatus = "EXPIRED";
+      } 
+      return b;
+    })
+    // const query =
+    //   role === "counselor"
+    //     ? { counselor: userId }
+    //     : { client: userId };
 
-    const bookings = await Booking.find(query)
-      .populate("client", "fullName email")
-      .populate("counselor", "fullName specialization");
+    // const bookings = await Booking.find(query)
+    //   .populate("client", "fullName email")
+    //   .populate("counselor", "fullName specialization");
 
     res.json(bookings);
   } catch (error) {
-    console.error("Error fetching bookings:", error);
+    // console.error("Error fetching bookings:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -73,13 +85,13 @@ export const updateBookingStatus = async (req, res) => {
       bookingId,
       { 
         sessionStatus, 
-        rejectionReason: sessionStatus === 'CANCELLED' ? rejectionReason : "",
-        videoLink: sessionStatus === 'UPCOMING' ? `https://meet.jit.si/session-${bookingId}` : ""
+        // rejectionReason: sessionStatus === 'CANCELLED' ? rejectionReason : "",
+        // videoLink: sessionStatus === 'UPCOMING' ? `https://meet.jit.si/session-${bookingId}` : ""
       },
       { new: true }
     );
 
-    res.json({ message: "Status updated", booking });
+    res.json({ message: `Booking ${sessionStatus}`, booking });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
